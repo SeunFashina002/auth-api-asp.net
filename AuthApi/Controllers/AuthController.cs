@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AuthApi.DTO;
 using AuthApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -25,17 +26,18 @@ namespace AuthApi.Controllers
         public static User user = new();
 
         [HttpPost("register")]
-        public ActionResult<User> Register(UserDto req)
+        public ActionResult<User> Register(SignUpDTO req)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(req.Password);
             user.Username = req.Username;
+            user.Email = req.Email;
             user.Password = passwordHash;
 
             return Ok(user);
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(UserDto req)
+        public ActionResult<User> Login(LoginDTO req)
         {
             if (
                 user.Username != req.Username
@@ -52,7 +54,7 @@ namespace AuthApi.Controllers
 
         private string CreateToken(User user)
         {
-            List<Claim> claims = new List<Claim> { new(ClaimTypes.Name, user.Username) };
+            List<Claim> claims = new() { new(ClaimTypes.Name, user.Username) };
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration.GetSection("jwt:Token").Value!)
