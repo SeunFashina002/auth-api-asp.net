@@ -13,7 +13,5 @@ namespace AuthApi.Models
 
         [Required(ErrorMessage = "password field is required")]
         public required string Password { get; set; }
-
-        public required string ConfirmPassword { get; set; }
     }
 }
